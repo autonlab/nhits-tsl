@@ -22,7 +22,7 @@ git clone https://github.com/autonlab/nhits-tsl.git
 cd nhits-tsl
 
 # (optional) create a virtual environment
-python3 -m venv .venv
+
 source .venv/bin/activate
 
 # Additional packages required for N-HiTS experiments
