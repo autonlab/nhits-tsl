@@ -149,19 +149,17 @@ class Model(nn.Module):
         self.configs = configs
         self.pred_len = configs.pred_len
         self.seq_len = configs.seq_len
-        self.num_basis = configs.num_basis
-        self.decomposer = BasisLayer(self.configs.seq_len)
+        self.num_basis = self.configs.poly_degree + self.configs.num_harmonics
+        self.decomposer = BasisLayer(self.configs.seq_len, self.configs.poly_degree, self.configs.num_harmonics)
         self.encoder = SimpleEncoder(self.configs.d_model, self.configs.d_ff)
         self.decoder = SimpleDecoder(self.configs.d_ff, self.configs.c_out)
-        self.global_forecaster = nn.Linear(self.configs.num_basis, self.configs.num_basis)
+        self.global_forecaster = nn.Linear(self.num_basis, self.num_basis)
 
+    def forecast(self, x_enc, x_mark_enc, x_dec, x_mark_dec):
 
+        x_global, coeffs = self.decomposer(x_enc)
 
-    def forecast(self, insample_y: torch.Tensor, insample_mask: torch.Tensor):
-
-        x_global, coeffs = self.decomposer(insample_y)
-
-        x_residual = insample_y - x_global
+        x_residual = x_enc - x_global
         z_residual = self.encoder(x_residual)
 
         y_residual = self.decoder(z_residual)
@@ -173,11 +171,10 @@ class Model(nn.Module):
 
         return forecast  # (B*, H)
 
-    def forecast_decomposition(self, insample_y: torch.Tensor, insample_mask: torch.Tensor,
-                               outsample_y: torch.Tensor):
+    def forecast_decomposition(self, x_enc, x_mark_enc, x_dec, x_mark_dec):
 
-        x_global, coeffs = self.decomposer(insample_y)
-        x_residual = insample_y - x_global
+        x_global, coeffs = self.decomposer(x_enc)
+        x_residual = x_enc - x_global
         z_residual = self.encoder(x_residual)
         y_residual = self.decoder(z_residual)
 
