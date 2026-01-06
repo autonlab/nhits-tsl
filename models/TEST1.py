@@ -40,12 +40,27 @@ class BasisLayer(nn.Module):
         self.register_buffer("B", B)
         self.register_buffer("B_pinv", B_pinv)
 
-    def forward(self, x):
-        x_squeeze = x.squeeze(1)
-        coeffs = x_squeeze @ self.B_pinv.T  # dims: [BATCH, num_basis]
-        global_component = coeffs @ self.B.T  # dims: [BATCH, window_size]
-        return global_component.unsqueeze(1), coeffs  # dims: [BATCH, 1, window_size], [BATCH, num_basis]
 
+    def forward(self, x):
+            # x: [Batch, Seq_Len, Channels]
+            
+            # Coefficients : Coeffs = B_pinv * X
+            # einsum: 
+            #   x: (batch, len, channel) -> blc
+            #   B_pinv: (num_basis, len) -> kl (k=num_basis, l=len)
+            #   Calculated pinv shape is (num_basis, window_size) if B is (window_size, num_basis)
+            
+            # B_pinv shape: [num_basis, window_size]
+            # x shape: [Batch, window_size, Channels]
+            # coeffs shape: [Batch, num_basis, Channels]
+            coeffs = torch.einsum('kl, blc -> bkc', self.B_pinv, x)
+            
+            # Reconstruction: Global = B * Coeffs
+            # B shape: [window_size, num_basis]
+            # global shape: [Batch, window_size, Channels]
+            global_component = torch.einsum('lk, bkc -> blc', self.B, coeffs)
+
+            return global_component, coeffs
 
 class SimpleEncoder(nn.Module):
     def __init__(self, input_dim, hidden_dim):
@@ -149,27 +164,58 @@ class Model(nn.Module):
         self.configs = configs
         self.pred_len = configs.pred_len
         self.seq_len = configs.seq_len
-        self.num_basis = self.configs.poly_degree + self.configs.num_harmonics
+        self.num_basis = (self.configs.poly_degree + 1) + (2 * self.configs.num_harmonics)
         self.decomposer = BasisLayer(self.configs.seq_len, self.configs.poly_degree, self.configs.num_harmonics)
-        self.encoder = SimpleEncoder(self.configs.d_model, self.configs.d_ff)
-        self.decoder = SimpleDecoder(self.configs.d_ff, self.configs.c_out)
+        self.recomposer = BasisLayer(self.pred_len, self.configs.poly_degree, self.configs.num_harmonics)
+
+        self.encoder = SimpleEncoder(1, self.configs.d_model)
+        self.decoder = SimpleDecoder(self.configs.d_model, 1)
         self.global_forecaster = nn.Linear(self.num_basis, self.num_basis)
 
     def forecast(self, x_enc, x_mark_enc, x_dec, x_mark_dec):
-
+        B, L, C = x_enc.shape
+        
         x_global, coeffs = self.decomposer(x_enc)
-
+        # 2. Local Residual Path
         x_residual = x_enc - x_global
-        z_residual = self.encoder(x_residual)
+        
+        # Reshape: (Batch, Length, Channel) -> (Batch * Channel, 1, Length)
+        x_residual_ci = x_residual.permute(0, 2, 1).reshape(B * C, 1, L)
+        
+        # Encoder Pass
+        z_residual = self.encoder(x_residual_ci) # Output: [B*C, d_ff, L]
+        
+        # Decoder Pass
+        y_residual_ci = self.decoder(z_residual) # Output: [B*C, 1, L]
+        
+        # Length Adjustment (Seq_Len -> Pred_Len)
+        if y_residual_ci.shape[-1] != self.pred_len:
+             y_residual_ci = F.interpolate(y_residual_ci, size=self.pred_len, mode='linear')
+             # Output: [B*C, 1, Pred_Len]
+        # Reshape Back: (Batch * Channel, 1, Pred_Len) -> (Batch, Pred_Len, Channel)
+        y_residual = y_residual_ci.reshape(B, C, self.pred_len).permute(0, 2, 1)
 
-        y_residual = self.decoder(z_residual)
+        # 4. Global Forecast (Coefficients Projection)
+        # coeffs: [B, Num_Basis, Enc_In] -> Linear는 마지막 차원에 작용하므로 Transpose 필요
+        # Linear: Num_Basis -> Num_Basis
+        coeffs_perm = coeffs.permute(0, 2, 1) # [B, Enc_In, Num_Basis]
+        x_global_forecast_coeffs = self.global_forecaster(coeffs_perm) # [B, Enc_In, Num_Basis]
+        x_global_forecast_coeffs = x_global_forecast_coeffs.permute(0, 2, 1) # [B, Num_Basis, Enc_In]
 
-        x_global_forecast = self.global_forecaster(coeffs)
+        # Recompose Global Component for Prediction Horizon
+        # Using recomposer's Basis Matrix (Pred_Len x Num_Basis)
+        # Global_Pred = B_pred * Coeffs_Pred
+        # einsum: lk (B_pred), bkc (coeffs) -> blc
+        x_global_forecast = torch.einsum('lk, bkc -> blc', self.recomposer.B, x_global_forecast_coeffs)
 
+        # 5. Combine
         forecast = x_global_forecast + y_residual
 
+        return forecast
 
-        return forecast  # (B*, H)
+    def forward(self, batch_x, batch_x_mark, dec_inp, batch_y_mark):
+        # batch_x: [Batch, Seq_Len, Channel]
+        return self.forecast(batch_x, batch_x_mark, dec_inp, batch_y_mark)
 
     def forecast_decomposition(self, x_enc, x_mark_enc, x_dec, x_mark_dec):
 
@@ -184,10 +230,3 @@ class Model(nn.Module):
 
         return forecast, x_global_forecast, y_residual  # (B*, H), (B*, H), (B*, H)
 
-    def forward(self, batch_x: torch.Tensor, batch_x_mark: torch.Tensor,
-                dec_inp: torch.Tensor, batch_y_mark: torch.Tensor):
-        # batch_x: (B, L, C)
-        B, L, C = batch_x.shape
-        assert L == self.seq_len, f"seq_len mismatch: got {L}, expected {self.seq_len}"
-
-        return self.forecast(batch_x, batch_x_mark, dec_inp, batch_y_mark)

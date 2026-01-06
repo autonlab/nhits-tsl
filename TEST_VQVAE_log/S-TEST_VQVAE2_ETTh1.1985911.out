@@ -1,0 +1,268 @@
+Using GPU
+Args in experiment:
+[1mBasic Config[0m
+  Task Name:          long_term_forecast  Is Training:        1                   
+  Model ID:           TEST_VQVAE2_96      Model:              TEST_VQVAE2         
+
+[1mData Loader[0m
+  Data:               ETTh1               Root Path:          /shared/s2/lab01/timeSeries/forecasting/base/ETT-small/
+  Data Path:          ETTh1.csv           Features:           M                   
+  Target:             OT                  Freq:               h                   
+  Checkpoints:        /shared/s2/lab01/jinmyeongchoi/TEST_VQVAE_checkpoints/
+
+[1mForecasting Task[0m
+  Seq Len:            96                  Label Len:          48                  
+  Pred Len:           96                  Seasonal Patterns:  Monthly             
+  Inverse:            0                   
+
+[1mModel Parameters[0m
+  Top k:              5                   Num Kernels:        6                   
+  Enc In:             7                   Dec In:             7                   
+  C Out:              7                   d model:            512                 
+  n heads:            8                   e layers:           2                   
+  d layers:           1                   d FF:               512                 
+  Moving Avg:         25                  Factor:             1                   
+  Distil:             1                   Dropout:            0.1                 
+  Embed:              timeF               Activation:         gelu                
+
+[1mRun Parameters[0m
+  Num Workers:        10                  Itr:                1                   
+  Train Epochs:       10                  Batch Size:         128                 
+  Patience:           3                   Learning Rate:      0.0001              
+  Des:                test_test_vqvae2    Loss:               MAE                 
+  Lradj:              type1               Use Amp:            0                   
+
+[1mGPU[0m
+  Use GPU:            1                   GPU:                0                   
+  Use Multi GPU:      0                   Devices:            0,1,2,3             
+
+[1mDe-stationary Projector Params[0m
+  P Hidden Dims:      128, 128            P Hidden Layers:    2                   
+
+Use GPU: cuda:0
+>>>>>>>start training : long_term_forecast_TEST_VQVAE2_96_TEST_VQVAE2_ETTh1_ftM_sl96_ll48_pl96_dm512_nh8_el2_dl1_df512_nh2_pd2_ne64_destest_test_vqvae2_0>>>>>>>>>>>>>>>>>>>>>>>>>>
+train 8449
+val 2785
+test 2785
+Epoch: 1 cost time: 3.1705315113067627
+Epoch: 1, Steps: 67 | Train Loss: 2.9855586 Vali Loss: 3.5767028 Test Loss: 3.1008942
+Validation loss decreased (inf --> 3.576703).  Saving model ...
+Updating learning rate to 0.0001
+Epoch: 2 cost time: 1.6593186855316162
+Epoch: 2, Steps: 67 | Train Loss: 2.8959958 Vali Loss: 3.8433378 Test Loss: 3.7015219
+EarlyStopping counter: 1 out of 3
+Updating learning rate to 5e-05
+Epoch: 3 cost time: 1.6157939434051514
+Epoch: 3, Steps: 67 | Train Loss: 3.0860932 Vali Loss: 3.9451334 Test Loss: 4.0261417
+EarlyStopping counter: 2 out of 3
+Updating learning rate to 2.5e-05
+Epoch: 4 cost time: 1.6389179229736328
+Epoch: 4, Steps: 67 | Train Loss: 3.2104580 Vali Loss: 4.0608348 Test Loss: 4.2930428
+EarlyStopping counter: 3 out of 3
+Early stopping
+>>>>>>>testing : long_term_forecast_TEST_VQVAE2_96_TEST_VQVAE2_ETTh1_ftM_sl96_ll48_pl96_dm512_nh8_el2_dl1_df512_nh2_pd2_ne64_destest_test_vqvae2_0<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+test 2785
+test shape: (2785, 96, 7) (2785, 96, 7)
+test shape: (2785, 96, 7) (2785, 96, 7)
+mse:1.5992400646209717, mae:0.9869086742401123, dtw:Not calculated
+Using GPU
+Args in experiment:
+[1mBasic Config[0m
+  Task Name:          long_term_forecast  Is Training:        1                   
+  Model ID:           TEST_VQVAE2_192     Model:              TEST_VQVAE2         
+
+[1mData Loader[0m
+  Data:               ETTh1               Root Path:          /shared/s2/lab01/timeSeries/forecasting/base/ETT-small/
+  Data Path:          ETTh1.csv           Features:           M                   
+  Target:             OT                  Freq:               h                   
+  Checkpoints:        /shared/s2/lab01/jinmyeongchoi/TEST_VQVAE_checkpoints/
+
+[1mForecasting Task[0m
+  Seq Len:            96                  Label Len:          48                  
+  Pred Len:           192                 Seasonal Patterns:  Monthly             
+  Inverse:            0                   
+
+[1mModel Parameters[0m
+  Top k:              5                   Num Kernels:        6                   
+  Enc In:             7                   Dec In:             7                   
+  C Out:              7                   d model:            512                 
+  n heads:            8                   e layers:           2                   
+  d layers:           1                   d FF:               512                 
+  Moving Avg:         25                  Factor:             1                   
+  Distil:             1                   Dropout:            0.1                 
+  Embed:              timeF               Activation:         gelu                
+
+[1mRun Parameters[0m
+  Num Workers:        10                  Itr:                1                   
+  Train Epochs:       10                  Batch Size:         128                 
+  Patience:           3                   Learning Rate:      0.0001              
+  Des:                test_test_vqvae2    Loss:               MAE                 
+  Lradj:              type1               Use Amp:            0                   
+
+[1mGPU[0m
+  Use GPU:            1                   GPU:                0                   
+  Use Multi GPU:      0                   Devices:            0,1,2,3             
+
+[1mDe-stationary Projector Params[0m
+  P Hidden Dims:      128, 128            P Hidden Layers:    2                   
+
+Use GPU: cuda:0
+>>>>>>>start training : long_term_forecast_TEST_VQVAE2_192_TEST_VQVAE2_ETTh1_ftM_sl96_ll48_pl192_dm512_nh8_el2_dl1_df512_nh2_pd2_ne64_destest_test_vqvae2_0>>>>>>>>>>>>>>>>>>>>>>>>>>
+train 8353
+val 2689
+test 2689
+Epoch: 1 cost time: 3.547433614730835
+Epoch: 1, Steps: 66 | Train Loss: 2.9730045 Vali Loss: 3.9164510 Test Loss: 3.3631564
+Validation loss decreased (inf --> 3.916451).  Saving model ...
+Updating learning rate to 0.0001
+Epoch: 2 cost time: 2.020313024520874
+Epoch: 2, Steps: 66 | Train Loss: 3.0796917 Vali Loss: 4.1963489 Test Loss: 4.4192818
+EarlyStopping counter: 1 out of 3
+Updating learning rate to 5e-05
+Epoch: 3 cost time: 1.9989354610443115
+Epoch: 3, Steps: 66 | Train Loss: 3.4753038 Vali Loss: 4.6343855 Test Loss: 5.5075457
+EarlyStopping counter: 2 out of 3
+Updating learning rate to 2.5e-05
+Epoch: 4 cost time: 2.0179061889648438
+Epoch: 4, Steps: 66 | Train Loss: 3.8173987 Vali Loss: 4.9998007 Test Loss: 6.0801538
+EarlyStopping counter: 3 out of 3
+Early stopping
+>>>>>>>testing : long_term_forecast_TEST_VQVAE2_192_TEST_VQVAE2_ETTh1_ftM_sl96_ll48_pl192_dm512_nh8_el2_dl1_df512_nh2_pd2_ne64_destest_test_vqvae2_0<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+test 2689
+test shape: (2689, 192, 7) (2689, 192, 7)
+test shape: (2689, 192, 7) (2689, 192, 7)
+mse:1.6412556171417236, mae:1.004311442375183, dtw:Not calculated
+Using GPU
+Args in experiment:
+[1mBasic Config[0m
+  Task Name:          long_term_forecast  Is Training:        1                   
+  Model ID:           TEST_VQVAE2_336     Model:              TEST_VQVAE2         
+
+[1mData Loader[0m
+  Data:               ETTh1               Root Path:          /shared/s2/lab01/timeSeries/forecasting/base/ETT-small/
+  Data Path:          ETTh1.csv           Features:           M                   
+  Target:             OT                  Freq:               h                   
+  Checkpoints:        /shared/s2/lab01/jinmyeongchoi/TEST_VQVAE_checkpoints/
+
+[1mForecasting Task[0m
+  Seq Len:            96                  Label Len:          48                  
+  Pred Len:           336                 Seasonal Patterns:  Monthly             
+  Inverse:            0                   
+
+[1mModel Parameters[0m
+  Top k:              5                   Num Kernels:        6                   
+  Enc In:             7                   Dec In:             7                   
+  C Out:              7                   d model:            512                 
+  n heads:            8                   e layers:           2                   
+  d layers:           1                   d FF:               512                 
+  Moving Avg:         25                  Factor:             1                   
+  Distil:             1                   Dropout:            0.1                 
+  Embed:              timeF               Activation:         gelu                
+
+[1mRun Parameters[0m
+  Num Workers:        10                  Itr:                1                   
+  Train Epochs:       10                  Batch Size:         128                 
+  Patience:           3                   Learning Rate:      0.0001              
+  Des:                test_test_vqvae2    Loss:               MAE                 
+  Lradj:              type1               Use Amp:            0                   
+
+[1mGPU[0m
+  Use GPU:            1                   GPU:                0                   
+  Use Multi GPU:      0                   Devices:            0,1,2,3             
+
+[1mDe-stationary Projector Params[0m
+  P Hidden Dims:      128, 128            P Hidden Layers:    2                   
+
+Use GPU: cuda:0
+>>>>>>>start training : long_term_forecast_TEST_VQVAE2_336_TEST_VQVAE2_ETTh1_ftM_sl96_ll48_pl336_dm512_nh8_el2_dl1_df512_nh2_pd2_ne64_destest_test_vqvae2_0>>>>>>>>>>>>>>>>>>>>>>>>>>
+train 8209
+val 2545
+test 2545
+Epoch: 1 cost time: 3.938538074493408
+Epoch: 1, Steps: 65 | Train Loss: 2.9344595 Vali Loss: 3.7137274 Test Loss: 3.2396457
+Validation loss decreased (inf --> 3.713727).  Saving model ...
+Updating learning rate to 0.0001
+Epoch: 2 cost time: 2.572167158126831
+Epoch: 2, Steps: 65 | Train Loss: 3.0008652 Vali Loss: 4.0728464 Test Loss: 3.9890920
+EarlyStopping counter: 1 out of 3
+Updating learning rate to 5e-05
+Epoch: 3 cost time: 2.5802361965179443
+Epoch: 3, Steps: 65 | Train Loss: 3.3783109 Vali Loss: 4.7009702 Test Loss: 5.2305840
+EarlyStopping counter: 2 out of 3
+Updating learning rate to 2.5e-05
+Epoch: 4 cost time: 2.5717689990997314
+Epoch: 4, Steps: 65 | Train Loss: 3.8170437 Vali Loss: 5.0353784 Test Loss: 5.9482153
+EarlyStopping counter: 3 out of 3
+Early stopping
+>>>>>>>testing : long_term_forecast_TEST_VQVAE2_336_TEST_VQVAE2_ETTh1_ftM_sl96_ll48_pl336_dm512_nh8_el2_dl1_df512_nh2_pd2_ne64_destest_test_vqvae2_0<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+test 2545
+test shape: (2545, 336, 7) (2545, 336, 7)
+test shape: (2545, 336, 7) (2545, 336, 7)
+mse:1.630292534828186, mae:1.0013439655303955, dtw:Not calculated
+Using GPU
+Args in experiment:
+[1mBasic Config[0m
+  Task Name:          long_term_forecast  Is Training:        1                   
+  Model ID:           TEST_VQVAE2_720     Model:              TEST_VQVAE2         
+
+[1mData Loader[0m
+  Data:               ETTh1               Root Path:          /shared/s2/lab01/timeSeries/forecasting/base/ETT-small/
+  Data Path:          ETTh1.csv           Features:           M                   
+  Target:             OT                  Freq:               h                   
+  Checkpoints:        /shared/s2/lab01/jinmyeongchoi/TEST_VQVAE_checkpoints/
+
+[1mForecasting Task[0m
+  Seq Len:            96                  Label Len:          48                  
+  Pred Len:           720                 Seasonal Patterns:  Monthly             
+  Inverse:            0                   
+
+[1mModel Parameters[0m
+  Top k:              5                   Num Kernels:        6                   
+  Enc In:             7                   Dec In:             7                   
+  C Out:              7                   d model:            512                 
+  n heads:            8                   e layers:           2                   
+  d layers:           1                   d FF:               512                 
+  Moving Avg:         25                  Factor:             1                   
+  Distil:             1                   Dropout:            0.1                 
+  Embed:              timeF               Activation:         gelu                
+
+[1mRun Parameters[0m
+  Num Workers:        10                  Itr:                1                   
+  Train Epochs:       10                  Batch Size:         128                 
+  Patience:           3                   Learning Rate:      0.0001              
+  Des:                test_test_vqvae2    Loss:               MAE                 
+  Lradj:              type1               Use Amp:            0                   
+
+[1mGPU[0m
+  Use GPU:            1                   GPU:                0                   
+  Use Multi GPU:      0                   Devices:            0,1,2,3             
+
+[1mDe-stationary Projector Params[0m
+  P Hidden Dims:      128, 128            P Hidden Layers:    2                   
+
+Use GPU: cuda:0
+>>>>>>>start training : long_term_forecast_TEST_VQVAE2_720_TEST_VQVAE2_ETTh1_ftM_sl96_ll48_pl720_dm512_nh8_el2_dl1_df512_nh2_pd2_ne64_destest_test_vqvae2_0>>>>>>>>>>>>>>>>>>>>>>>>>>
+train 7825
+val 2161
+test 2161
+Epoch: 1 cost time: 5.32689356803894
+Epoch: 1, Steps: 62 | Train Loss: 3.0007944 Vali Loss: 3.6369864 Test Loss: 3.0409705
+Validation loss decreased (inf --> 3.636986).  Saving model ...
+Updating learning rate to 0.0001
+Epoch: 2 cost time: 3.9835433959960938
+Epoch: 2, Steps: 62 | Train Loss: 2.8332992 Vali Loss: 3.6880081 Test Loss: 3.2427179
+EarlyStopping counter: 1 out of 3
+Updating learning rate to 5e-05
+Epoch: 3 cost time: 3.9680428504943848
+Epoch: 3, Steps: 62 | Train Loss: 3.0099861 Vali Loss: 4.2205603 Test Loss: 4.2680601
+EarlyStopping counter: 2 out of 3
+Updating learning rate to 2.5e-05
+Epoch: 4 cost time: 4.008890867233276
+Epoch: 4, Steps: 62 | Train Loss: 3.2740187 Vali Loss: 4.3194736 Test Loss: 4.5917922
+EarlyStopping counter: 3 out of 3
+Early stopping
+>>>>>>>testing : long_term_forecast_TEST_VQVAE2_720_TEST_VQVAE2_ETTh1_ftM_sl96_ll48_pl720_dm512_nh8_el2_dl1_df512_nh2_pd2_ne64_destest_test_vqvae2_0<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+test 2161
+test shape: (2161, 720, 7) (2161, 720, 7)
+test shape: (2161, 720, 7) (2161, 720, 7)
+mse:1.6073890924453735, mae:0.9993932843208313, dtw:Not calculated
